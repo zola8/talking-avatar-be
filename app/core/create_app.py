@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes import azure
+from app.api.routes import chat
 from app.api.routes import main_route
 from app.core.config import settings
 
@@ -35,5 +37,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(main_route.router)
+    app.include_router(chat.router)
+    app.include_router(azure.router)
 
     return app
