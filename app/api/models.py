@@ -24,3 +24,8 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     text: str
     role: Role = Role.ASSISTANT
+
+
+class AzureTokenResponse(BaseModel):
+    token: str
+    region: str

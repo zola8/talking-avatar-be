@@ -1,7 +1,7 @@
 import httpx
 
 from app.core.agents.echo_agent import EchoAgent
-from app.core.azure.service import AzureService
+from app.core.services.azure_service import AzureService
 from app.core.services.chat_service import ChatService
 
 _agent = EchoAgent()

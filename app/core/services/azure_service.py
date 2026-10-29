@@ -2,16 +2,16 @@ import logging
 
 import httpx
 
-from app.core.azure.errors import AzureConfigError
-from app.core.azure.errors import AzureTokenError
-from app.core.azure.errors import AzureUnavailableError
+from app.api.models import AzureTokenResponse
 from app.core.config import settings
+from app.core.errors import AzureConfigError
+from app.core.errors import AzureTokenError
+from app.core.errors import AzureUnavailableError
 
 logger = logging.getLogger(__name__)
 
 _TOKEN_URL = "https://{region}.api.cognitive.microsoft.com/sts/v1.0/issueToken"
 _SUBSCRIPTION_HEADER = "Ocp-Apim-Subscription-Key"
-_REQUEST_TIMEOUT = 10.0  # seconds
 
 
 class AzureService:
@@ -29,7 +29,7 @@ class AzureService:
         self._region = region or settings.azure_speech_region
         self._key = key or settings.azure_speech_key
 
-    async def issue_token(self) -> str:
+    async def issue_token(self) -> AzureTokenResponse:
         logger.info("Issuing Azure Speech token")
         self._require_config()
 
@@ -55,7 +55,7 @@ class AzureService:
             raise AzureTokenError(f"status={resp.status_code}")
 
         logger.info("Azure Speech token issued")
-        return resp.text
+        return AzureTokenResponse(token=resp.text, region=self._region)
 
     def _require_config(self) -> None:
         if not self._key:
