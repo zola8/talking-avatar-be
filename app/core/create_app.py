@@ -8,6 +8,7 @@ from app.api.routes import azure
 from app.api.routes import chat
 from app.api.routes import main_route
 from app.core.config import settings
+from app.core.dependencies import close_http_clients
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ async def lifespan(app: FastAPI):
     logger.debug("Starting lifespan")
     yield
     logger.debug("Finishing lifespan")
+    await close_http_clients()
 
 
 def create_app() -> FastAPI:
