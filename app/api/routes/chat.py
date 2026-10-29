@@ -1,21 +1,15 @@
-import asyncio
-
 from fastapi import APIRouter
+from fastapi import Depends
 
+from app.core.dependencies import get_chat_service
 from app.api.models import ChatRequest
 from app.api.models import ChatResponse
+from app.core.services.chat_service import ChatService
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 
 @router.post("", response_model=ChatResponse)
-async def chat(req: ChatRequest) -> ChatResponse:
-    await asyncio.sleep(0.6)
-
-    # Find the latest user message
-    user_messages = [m for m in req.messages if m.role == "user"]
-    if not user_messages:
-        return ChatResponse(text="I didn't hear anything.")
-
-    last_user_message = user_messages[-1].content
-    return ChatResponse(text=f"I heard you say: {last_user_message}")
+async def chat(req: ChatRequest, chat_service: ChatService = Depends(get_chat_service)) -> ChatResponse:
+    msg = await chat_service.handle(req)
+    return ChatResponse(text=msg.content, role=msg.role)
