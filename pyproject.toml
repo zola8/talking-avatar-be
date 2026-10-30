@@ -15,4 +15,5 @@ dev = [
     "workers-py",
     "uvicorn",
     "pywrangler",
+    "python-dotenv"
 ]
