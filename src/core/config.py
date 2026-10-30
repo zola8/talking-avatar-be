@@ -5,6 +5,13 @@ from dataclasses import field
 
 @dataclass
 class Settings:
+    """Application settings.
+
+    Initialized once at module import time. Reads from:
+      1. Local `.env` file (via python-dotenv) — local dev only
+      2. `os.environ` — populated by _bootstrap_worker_env() on Cloudflare,
+         or by your shell/.env locally
+    """
     allowed_origins: list[str] = field(default_factory=lambda: [
         "http://localhost:5173",
         "https://react-talking-avatar.zola8.workers.dev",
@@ -12,45 +19,37 @@ class Settings:
     azure_speech_region: str = "westeurope"
     azure_speech_key: str = ""
 
-    @classmethod
-    def from_env(cls, worker_env=None) -> "Settings":
-        """Build Settings.
-
-        - On Workers: pass the `env` from your fetch handler → reads Cloudflare bindings.
-        - Locally: pass None → loads `.env` via python-dotenv, then reads os.environ.
-        """
-        if worker_env is not None:
-            raw_origins = getattr(worker_env, "ALLOWED_ORIGINS", "")
-            origins = (
-                _parse_origins(raw_origins)
-                if raw_origins
-                else cls().allowed_origins
-            )
-            return cls(
-                allowed_origins=origins,
-                azure_speech_region=getattr(
-                    worker_env, "AZURE_SPEECH_REGION", "westeurope"
-                ),
-                azure_speech_key=getattr(worker_env, "AZURE_SPEECH_KEY", ""),
-            )
-
-        _load_dotenv_if_present()
-
-        raw_origins = os.getenv("ALLOWED_ORIGINS", "")
-        origins = (
-            _parse_origins(raw_origins)
-            if raw_origins
-            else cls().allowed_origins
+    def __post_init__(self) -> None:
+        raw = os.getenv("ALLOWED_ORIGINS", "")
+        if raw:
+            self.allowed_origins = _parse_origins(raw)
+        self.azure_speech_region = os.getenv(
+            "AZURE_SPEECH_REGION", self.azure_speech_region
         )
-        return cls(
-            allowed_origins=origins,
-            azure_speech_region=os.getenv("AZURE_SPEECH_REGION", "westeurope"),
-            azure_speech_key=os.getenv("AZURE_SPEECH_KEY", ""),
-        )
+        self.azure_speech_key = os.getenv("AZURE_SPEECH_KEY", "")
 
 
 def _parse_origins(raw: str) -> list[str]:
     return [o.strip() for o in raw.split(",") if o.strip()]
+
+
+def _bootstrap_worker_env() -> None:
+    try:
+        from js import cloudflare        # type: ignore[import-not-found]
+        env = cloudflare.workers.env
+    except Exception:
+        _load_dotenv_if_present()
+        return
+
+    for key in dir(env):
+        if key.startswith("_"):
+            continue
+        try:
+            value = getattr(env, key)
+        except Exception:
+            continue
+        if isinstance(value, str):
+            os.environ[key] = value
 
 
 def _load_dotenv_if_present() -> None:
@@ -61,4 +60,8 @@ def _load_dotenv_if_present() -> None:
         pass
 
 
-settings = Settings.from_env()
+# Bootstrap BEFORE constructing the singleton
+_bootstrap_worker_env()
+
+# Module-level singleton — Settings instance initialized once at startup.
+settings = Settings()

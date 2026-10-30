@@ -1,5 +1,3 @@
-import core.config as config_module
-from core.config import Settings
 from core.create_app import create_app
 from core.logging_config import configure_logging
 
@@ -10,14 +8,7 @@ app = create_app()
 try:
     from workers import asgi
 
-    AsgiHandler = asgi.entrypoint(app)
-
-
-    class Default(AsgiHandler):
-        async def fetch(self, request, env, ctx):
-            config_module.settings = Settings.from_env(env)
-            return await super().fetch(request, env, ctx)
-
+    Default = asgi.entrypoint(app)
 
 except ModuleNotFoundError:
     # Local dev — `workers` module isn't available on CPython.
