@@ -1,0 +1,18 @@
+[project]
+name = "talking-avatar-be"
+version = "0.1.0"
+description = "Talking Avatar backend"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "pydantic",
+    "pydantic-settings",
+    "httpx",
+    "python-json-logger"
+]
+
+[dependency-groups]
+dev = [
+    "workers-py",
+    "uvicorn",
+]
