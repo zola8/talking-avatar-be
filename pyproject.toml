@@ -6,7 +6,6 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi",
     "pydantic",
-    "pydantic-settings",
     "httpx",
     "python-json-logger"
 ]
@@ -15,4 +14,5 @@ dependencies = [
 dev = [
     "workers-py",
     "uvicorn",
+    "pywrangler",
 ]
