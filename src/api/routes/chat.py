@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from fastapi import Depends
 
-from src.core.dependencies import get_chat_service
-from src.api.models import ChatRequest
-from src.api.models import ChatResponse
-from src.core.services.chat_service import ChatService
+from core.dependencies import get_chat_service
+from api.models import ChatRequest
+from api.models import ChatResponse
+from core.services.chat_service import ChatService
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 

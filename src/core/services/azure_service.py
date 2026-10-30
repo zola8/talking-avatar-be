@@ -2,11 +2,11 @@ import logging
 
 import httpx
 
-from src.api.models import AzureTokenResponse
-from src.core.config import settings
-from src.core.errors import AzureConfigError
-from src.core.errors import AzureTokenError
-from src.core.errors import AzureUnavailableError
+from api.models import AzureTokenResponse
+from core.config import settings
+from core.errors import AzureConfigError
+from core.errors import AzureTokenError
+from core.errors import AzureUnavailableError
 
 logger = logging.getLogger(__name__)
 

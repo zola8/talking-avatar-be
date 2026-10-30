@@ -4,11 +4,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.routes import azure
-from src.api.routes import chat
-from src.api.routes import main_route
-from src.core.config import settings
-from src.core.dependencies import close_http_clients
+from api.routes import azure
+from api.routes import chat
+from api.routes import main_route
+from core.config import settings
+from core.dependencies import close_http_clients
 
 logger = logging.getLogger(__name__)
 

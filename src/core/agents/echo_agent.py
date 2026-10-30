@@ -1,7 +1,7 @@
 import asyncio
 
-from src.api.models import Message
-from src.api.models import Role
+from api.models import Message
+from api.models import Role
 
 
 class EchoAgent:

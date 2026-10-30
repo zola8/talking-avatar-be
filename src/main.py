@@ -1,5 +1,5 @@
-from src.core.create_app import create_app
-from src.core.logging_config import configure_logging
+from core.create_app import create_app
+from core.logging_config import configure_logging
 
 configure_logging()
 
