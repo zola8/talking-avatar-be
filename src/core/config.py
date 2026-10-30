@@ -34,16 +34,20 @@ settings = Settings(
 )
 
 
-def apply_worker_env(env: dict):
-    """
-    Updates the settings object using the Cloudflare Worker 'env' bindings.
-    This is called by FastAPI middleware on the first request.
-    """
-    if "AZURE_SPEECH_KEY" in env:
-        settings.azure_speech_key = env["AZURE_SPEECH_KEY"]
-    if "AZURE_SPEECH_REGION" in env:
-        settings.azure_speech_region = env["AZURE_SPEECH_REGION"]
-    if "ALLOWED_ORIGINS" in env:
-        parsed = _parse_origins(env["ALLOWED_ORIGINS"])
-        if parsed:
-            settings.allowed_origins = parsed
+def apply_worker_env(env):
+    if not env:
+        return
+
+    for key in ["AZURE_SPEECH_KEY", "AZURE_SPEECH_REGION", "ALLOWED_ORIGINS"]:
+        val = getattr(env, key, None)
+        if val is not None:
+            if key == "AZURE_SPEECH_KEY":
+                settings.azure_speech_key = val
+            elif key == "AZURE_SPEECH_REGION":
+                settings.azure_speech_region = val
+            elif key == "ALLOWED_ORIGINS":
+                parsed = _parse_origins(val)
+                if parsed:
+                    settings.allowed_origins = parsed
+            if isinstance(val, str):
+                os.environ[key] = val
