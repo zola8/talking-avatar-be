@@ -1,5 +1,3 @@
-import uvicorn
-
 from src.core.create_app import create_app
 from src.core.logging_config import configure_logging
 
@@ -17,5 +15,7 @@ except ModuleNotFoundError:
     pass
 
 if __name__ == '__main__':
+    import uvicorn
+
     print("http://localhost:8080/docs")
     uvicorn.run(app, port=8080)
