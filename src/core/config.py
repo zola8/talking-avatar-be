@@ -47,8 +47,3 @@ def apply_worker_env(env: dict):
         parsed = _parse_origins(env["ALLOWED_ORIGINS"])
         if parsed:
             settings.allowed_origins = parsed
-
-    # Optional: Inject into os.environ so other 3rd party libraries can find them
-    for k, v in env.items():
-        if isinstance(v, str):
-            os.environ[k] = v
