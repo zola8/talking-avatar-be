@@ -7,3 +7,7 @@ compatibility_flags = ["python_workers"]
 enabled = true
 invocation_logs = true
 persist = true
+
+[vars]
+AZURE_SPEECH_REGION = "westeurope"
+ALLOWED_ORIGINS = "http://localhost:5173,https://react-talking-avatar.zola8.workers.dev"
