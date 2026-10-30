@@ -2,3 +2,8 @@ name = "talking-avatar-be"
 main = "src/main.py"
 compatibility_date = "2026-10-30"
 compatibility_flags = ["python_workers"]
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+persist = true
