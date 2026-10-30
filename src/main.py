@@ -1,7 +1,7 @@
 import uvicorn
 
-from app.core.create_app import create_app
-from app.core.logging_config import configure_logging
+from src.core.create_app import create_app
+from src.core.logging_config import configure_logging
 
 configure_logging()
 

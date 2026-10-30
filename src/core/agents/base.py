@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from app.api.models import Message
+from src.api.models import Message
 
 
 class Agent(Protocol):

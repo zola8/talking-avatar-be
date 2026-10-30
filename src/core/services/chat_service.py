@@ -1,6 +1,6 @@
-from app.api.models import ChatRequest
-from app.api.models import Message
-from app.core.agents.base import Agent
+from src.api.models import ChatRequest
+from src.api.models import Message
+from src.core.agents.base import Agent
 
 
 class ChatService:

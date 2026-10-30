@@ -4,12 +4,12 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 
-from app.api.models import AzureTokenResponse
-from app.core.dependencies import get_azure_service
-from app.core.errors import AzureConfigError
-from app.core.errors import AzureTokenError
-from app.core.errors import AzureUnavailableError
-from app.core.services.azure_service import AzureService
+from src.api.models import AzureTokenResponse
+from src.core.dependencies import get_azure_service
+from src.core.errors import AzureConfigError
+from src.core.errors import AzureTokenError
+from src.core.errors import AzureUnavailableError
+from src.core.services.azure_service import AzureService
 
 logger = logging.getLogger(__name__)
 
