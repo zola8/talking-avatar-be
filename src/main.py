@@ -7,7 +7,7 @@ from core.create_app import create_app
 from core.logging_config import configure_logging
 
 configure_logging()
-app = create_app()
+_app = None
 
 
 class Default(asgi.WorkerEntrypoint):
@@ -18,11 +18,14 @@ class Default(asgi.WorkerEntrypoint):
             print(f"Initialized settings with Azure Region: {settings.azure_speech_region}")
 
     async def fetch(self, request: Request, env, ctx):
-        return await asgi.fetch(app, request, env, ctx)
+        global _app
+        if _app is None:
+            _app = create_app()
+        return await asgi.fetch(_app, request, env, ctx)
 
 
 if __name__ == "__main__":
     import uvicorn
 
     print("Swagger UI: http://localhost:8080/docs")
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(create_app(), host="0.0.0.0", port=8080)
