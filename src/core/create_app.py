@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routes import azure
 from api.routes import chat
 from api.routes import main_route
-from core.dependencies import close_http_clients
 
 logger = logging.getLogger(__name__)
 
