@@ -22,7 +22,6 @@ async def lifespan(app: FastAPI):
     logger.debug("Starting lifespan")
     yield
     logger.debug("Finishing lifespan")
-    await close_http_clients()
 
 
 def create_app() -> FastAPI:

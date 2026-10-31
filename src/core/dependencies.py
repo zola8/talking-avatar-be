@@ -1,3 +1,5 @@
+from collections.abc import AsyncGenerator
+
 import httpx
 
 from core.agents.echo_agent import EchoAgent
@@ -6,17 +8,12 @@ from core.services.chat_service import ChatService
 
 _agent = EchoAgent()
 _service = ChatService(agent=_agent)
-_azure_http = httpx.AsyncClient(timeout=10.0)
-_azure_service = AzureService(client=_azure_http)
 
 
 def get_chat_service() -> ChatService:
     return _service
 
 
-def get_azure_service() -> AzureService:
-    return _azure_service
-
-
-async def close_http_clients() -> None:
-    await _azure_http.aclose()
+async def get_azure_service() -> AsyncGenerator[AzureService, None]:
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        yield AzureService(client=client)
