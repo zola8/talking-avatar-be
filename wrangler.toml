@@ -1,5 +1,5 @@
 name = "talking-avatar-be"
-main = "src/main.py"
+main = "src/worker.py"
 compatibility_date = "2026-10-30"
 compatibility_flags = ["python_workers"]
 

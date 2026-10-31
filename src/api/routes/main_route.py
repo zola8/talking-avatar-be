@@ -2,8 +2,6 @@ import os
 
 from fastapi import APIRouter
 
-from core.config import settings
-
 router = APIRouter()
 
 
@@ -16,5 +14,4 @@ async def root() -> dict:
 def debug_env():
     return {
         "os.azure_speech_key": str(os.getenv("AZURE_SPEECH_KEY")),
-        "settings.azure_speech_key": settings.azure_speech_key,
     }

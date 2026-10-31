@@ -7,10 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routes import azure
 from api.routes import chat
 from api.routes import main_route
-from core.config import settings
 from core.dependencies import close_http_clients
 
 logger = logging.getLogger(__name__)
+
+_allowed_origins = [
+    "http://localhost:5173",
+    "https://react-talking-avatar.zola8.workers.dev",
+]
 
 
 @asynccontextmanager
@@ -32,7 +36,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.allowed_origins,
+        allow_origins=_allowed_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
