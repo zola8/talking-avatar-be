@@ -1,0 +1,13 @@
+.git
+.github
+.venv
+__pycache__
+*.pyc
+.env
+.env.*
+node_modules
+upload/
+download/
+scripts/
+*.md
+tests/

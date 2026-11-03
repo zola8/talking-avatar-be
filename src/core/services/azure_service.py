@@ -29,7 +29,7 @@ class AzureService:
 
     async def issue_token(self) -> AzureTokenResponse:
         region = self._region_override or os.getenv("AZURE_SPEECH_REGION", _DEFAULT_REGION)
-        key = self._key_override or os.getenv("AZURE_SPEECH_KEY", "")
+        key = self._key_override or os.getenv("AZURE_SPEECH_KEY")
 
         logger.info("Issuing Azure Speech token for region=%s", region)
         if not key:

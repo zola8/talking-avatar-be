@@ -7,13 +7,7 @@ dependencies = [
     "fastapi",
     "pydantic",
     "httpx",
-    "python-json-logger"
-]
-
-[dependency-groups]
-dev = [
-    "workers-py",
+    "python-json-logger",
+    "python-dotenv",
     "uvicorn",
-    "pywrangler",
-    "python-dotenv"
 ]

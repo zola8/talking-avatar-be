@@ -8,6 +8,8 @@ load_dotenv()
 
 configure_logging()
 
+app = create_app()
+
 if __name__ == "__main__":
     print("Swagger UI: http://localhost:8080/docs")
-    uvicorn.run(create_app(), port=8080)
+    uvicorn.run(app, port=8080)
