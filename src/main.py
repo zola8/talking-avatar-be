@@ -1,10 +1,10 @@
 import uvicorn
 from dotenv import load_dotenv
 
+load_dotenv()
+
 from core.create_app import create_app
 from core.logging_config import configure_logging
-
-load_dotenv()
 
 configure_logging()
 

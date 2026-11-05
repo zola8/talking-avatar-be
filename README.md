@@ -9,7 +9,7 @@ You must have **uv**: `pip install uv`
 Then:
 
 ```shell
-uv sync
+uv sync --upgrade
 ```
 
 ### Build locally

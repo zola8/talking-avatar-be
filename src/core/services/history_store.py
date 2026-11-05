@@ -89,7 +89,11 @@ class InMemoryHistoryStore:
         async with self._lock:
             existing = list(self._store.get(key, []))
 
-            # Idempotency: if client_message_id already stored, don't re-add.
+            existing = [
+                m for m in existing
+                if not (m.role == Role.USER and m.status == "pending")
+            ]
+
             if msg.client_message_id and any(
                 m.client_message_id == msg.client_message_id for m in existing
             ):

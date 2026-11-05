@@ -7,6 +7,7 @@ from fastapi import Header
 
 from core.agents.base import Agent
 from core.agents.echo_agent import EchoAgent
+from core.agents.pydantic_ai_agent import PydanticAIAgent
 from core.services.azure_service import AzureService
 from core.services.chat_service import ChatService
 from core.services.history_store import HistoryStore
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 # --- Agent registry (singletons) ---
 _agents: dict[str, Agent] = {
     "echo": EchoAgent(),
+    "google": PydanticAIAgent(name="google agent", model="google:gemini-3.8-flash", system_prompt="You are a helpful general agent.")
 }
 
 _history_store: HistoryStore = InMemoryHistoryStore(max_messages=100)
