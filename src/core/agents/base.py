@@ -1,3 +1,4 @@
+from typing import AsyncGenerator
 from typing import Protocol
 
 from api.models import Message
@@ -6,4 +7,4 @@ from api.models import Message
 class Agent(Protocol):
     name: str
 
-    async def respond(self, history: list[Message]) -> Message: ...
+    def stream(self, history: list[Message]) -> AsyncGenerator[str, None]: ...

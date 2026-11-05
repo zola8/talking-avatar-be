@@ -1,14 +1,17 @@
 from enum import StrEnum
 
 from pydantic import BaseModel
-from pydantic import Field
+
+
+class AzureTokenResponse(BaseModel):
+    token: str
+    region: str
 
 
 class Role(StrEnum):
     SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
-    # later: TOOL = "tool", FUNCTION = "function"
 
 
 class Message(BaseModel):
@@ -17,8 +20,8 @@ class Message(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    userId: str
-    messages: list[Message] = Field(default_factory=list)
+    agentId: str
+    content: str
 
 
 class ChatResponse(BaseModel):
@@ -26,6 +29,6 @@ class ChatResponse(BaseModel):
     role: Role = Role.ASSISTANT
 
 
-class AzureTokenResponse(BaseModel):
-    token: str
-    region: str
+class AgentInfo(BaseModel):
+    agentId: str
+    name: str

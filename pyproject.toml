@@ -4,10 +4,12 @@ version = "0.1.0"
 description = "Talking Avatar backend"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi",
+    "fastapi>=0.162",
     "pydantic",
+    "pydantic-settings",
+    "pydantic-ai",
     "httpx",
     "python-json-logger",
     "python-dotenv",
-    "uvicorn",
+    "uvicorn[standard]",
 ]
