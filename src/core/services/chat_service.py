@@ -1,3 +1,6 @@
+import asyncio
+import logging
+import uuid
 from collections.abc import AsyncGenerator
 
 from api.models import AgentInfo
@@ -6,6 +9,8 @@ from api.models import Message
 from api.models import Role
 from core.agents.base import Agent
 from core.services.history_store import HistoryStore
+
+logger = logging.getLogger(__name__)
 
 
 class ChatService:
@@ -23,34 +28,71 @@ class ChatService:
             for aid, a in self._agents.items()
         ]
 
-    async def stream(
-        self, req: ChatRequest, user_id: str
-    ) -> AsyncGenerator[str, None]:
-        agent = self._agents.get(req.agentId)
-        if agent is None:
-            yield f"Unknown agent: {req.agentId}"
-            return
-
-        history = await self._history.load(user_id, req.agentId)
-        history.append(Message(role=Role.USER, content=req.content))
-
-        chunks: list[str] = []
-        async for chunk in agent.stream(history):
-            chunks.append(chunk)
-            yield chunk
-
-        history.append(Message(role=Role.ASSISTANT, content="".join(chunks)))
-        await self._history.save(user_id, req.agentId, history)
+    def agent_ids(self) -> set[str]:
+        return set(self._agents.keys())
 
     async def list_conversations(self) -> list[dict]:
         all_data = await self._history.all()
         return [
-            {"userId": uid, "agentId": aid, "messageCount": len(msgs)}
-            for (uid, aid), msgs in all_data.items()
+            {
+                "userId": uid,
+                "agentId": aid,
+                "conversationId": cid,
+                "messageCount": len(msgs),
+            }
+            for (uid, aid, cid), msgs in all_data.items()
         ]
 
-    async def get_conversation(self, user_id: str, agent_id: str) -> list[Message]:
-        return await self._history.load(user_id, agent_id)
+    async def get_conversation(
+        self, user_id: str, agent_id: str, conversation_id: str
+    ) -> list[Message]:
+        return await self._history.load(user_id, agent_id, conversation_id)
 
-    async def clear_conversation(self, user_id: str, agent_id: str) -> None:
-        await self._history.clear(user_id, agent_id)
+    async def clear_conversation(
+        self, user_id: str, agent_id: str, conversation_id: str
+    ) -> None:
+        await self._history.clear(user_id, agent_id, conversation_id)
+
+    async def stream_events(
+        self, user_id: str, req: ChatRequest
+    ) -> AsyncGenerator[dict, None]:
+        conversation_id = req.conversation_id or str(uuid.uuid4())
+        yield {"type": "meta", "conversation_id": conversation_id}
+
+        user_msg = Message(
+            role=Role.USER,
+            content=req.content,
+            status="pending",
+            client_message_id=req.client_message_id,
+        )
+        history = await self._history.append_and_load(
+            user_id, req.agent_id, conversation_id, user_msg
+        )
+
+        chunks: list[str] = []
+        final_content: str | None = None
+
+        try:
+            async for event in self._agents[req.agent_id].iter(history):
+                if event["type"] == "delta":
+                    chunks.append(event["content"])
+                elif event["type"] == "final":
+                    final_content = event.get("content", "")
+                yield event
+        except asyncio.CancelledError:
+            # Client disconnected; user message stays pending, filtered next load.
+            raise
+        except Exception as e:
+            logger.exception("Agent stream failed")
+            yield {"type": "error", "message": str(e)}
+            return  # do not persist, do not yield done
+
+        assistant_text = (
+            final_content if final_content is not None else "".join(chunks)
+        )
+        assistant_msg = Message(role=Role.ASSISTANT, content=assistant_text)
+        await self._history.append_assistant(
+            user_id, req.agent_id, conversation_id, assistant_msg
+        )
+
+        yield {"type": "done"}

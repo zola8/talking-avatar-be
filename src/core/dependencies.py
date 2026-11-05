@@ -2,11 +2,11 @@ import logging
 from collections.abc import AsyncGenerator
 
 import httpx
+from fastapi import HTTPException
 from fastapi import Header
 
 from core.agents.base import Agent
 from core.agents.echo_agent import EchoAgent
-from core.agents.shout_agent import ShoutAgent
 from core.services.azure_service import AzureService
 from core.services.chat_service import ChatService
 from core.services.history_store import HistoryStore
@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 # --- Agent registry (singletons) ---
 _agents: dict[str, Agent] = {
     "echo": EchoAgent(),
-    "shout": ShoutAgent(),
 }
 
 _history_store: HistoryStore = InMemoryHistoryStore(max_messages=100)
@@ -45,6 +44,6 @@ async def get_current_user_id(x_user_id: str | None = Header(default=None)) -> s
     """
     if not x_user_id:
         logger.error("Missing user identity")
-    #     raise HTTPException(status_code=401, detail="Missing user identity")
-    # return x_user_id
-    return "test-user-id"
+        raise HTTPException(status_code=401, detail="Missing user identity")
+    return x_user_id
+    # return "test-user-id"
