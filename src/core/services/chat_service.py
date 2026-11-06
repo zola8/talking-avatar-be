@@ -8,6 +8,8 @@ from api.models import ChatRequest
 from api.models import Message
 from api.models import Role
 from core.agents.base import Agent
+from core.agents.events import DeltaEvent
+from core.agents.events import FinalEvent
 from core.services.history_store import HistoryStore
 
 logger = logging.getLogger(__name__)
@@ -73,12 +75,12 @@ class ChatService:
         final_content: str | None = None
 
         try:
-            async for event in self._agents[req.agent_id].iter(history):
-                if event["type"] == "delta":
-                    chunks.append(event["content"])
-                elif event["type"] == "final":
-                    final_content = event.get("content", "")
-                yield event
+            async for event in self._agents[req.agent_id].stream(history):
+                if isinstance(event, DeltaEvent):
+                    chunks.append(event.content)
+                elif isinstance(event, FinalEvent):
+                    final_content = event.content
+                yield event.to_dict()
         except asyncio.CancelledError:
             # Client disconnected; user message stays pending, filtered next load.
             raise

@@ -8,6 +8,7 @@ from fastapi import Header
 from core.agents.base import Agent
 from core.agents.echo_agent import EchoAgent
 from core.agents.pydantic_ai_agent import PydanticAIAgent
+from core.agents.pydantic_ai_translator import PydanticAIEventTranslator
 from core.services.azure_service import AzureService
 from core.services.chat_service import ChatService
 from core.services.history_store import HistoryStore
@@ -16,9 +17,18 @@ from core.services.history_store import InMemoryHistoryStore
 logger = logging.getLogger(__name__)
 
 # --- Agent registry (singletons) ---
+_translator = PydanticAIEventTranslator()
+
+_ollama_agent = PydanticAIAgent(
+    name="ollama agent",
+    model="ollama:gemma4:31b",
+    system_prompt="You are a helpful general agent.",
+    translator=_translator
+)
+
 _agents: dict[str, Agent] = {
     "echo": EchoAgent(),
-    "google": PydanticAIAgent(name="google agent", model="google:gemini-3.8-flash", system_prompt="You are a helpful general agent.")
+    "ollama": _ollama_agent,
 }
 
 _history_store: HistoryStore = InMemoryHistoryStore(max_messages=100)

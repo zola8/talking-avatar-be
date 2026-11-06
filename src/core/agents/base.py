@@ -7,5 +7,5 @@ from api.models import Message
 class Agent(Protocol):
     name: str
 
-    def iter(self, history: list[Message]) -> AsyncGenerator[dict, None]:
+    def stream(self, history: list[Message]) -> AsyncGenerator[dict, None]:
         ...
